@@ -1,0 +1,78 @@
+from locust import HttpUser, task, between
+
+class MyUser(HttpUser):
+    wait_time = between(1, 2)  # Wait time between requests
+
+    @task
+    def create_student(self):
+        payload = {
+            "prn": "123456",
+            "name": "John Doe",
+            "pass": "password",
+            "branch": "Computer Science"
+        }
+        headers = {'Content-Type': 'application/json'}
+        self.client.post("/create/student", json=payload, headers=headers)
+
+    @task
+    def create_teacher(self):
+        payload = {
+            "name": "Jane Smith",
+            "pass": "password",
+            "dept": "Mathematics"
+        }
+        headers = {'Content-Type': 'application/json'}
+        self.client.post("/create/teacher", json=payload, headers=headers)
+
+    @task
+    def student_login(self):
+        payload = {
+            "prn": "123456",
+            "pass": "password"
+        }
+        headers = {'Content-Type': 'application/json'}
+        self.client.post("/auth/student", json=payload, headers=headers)
+
+    @task
+    def teacher_login(self):
+        payload = {
+            "t_id": "789",
+            "pass": "password"
+        }
+        headers = {'Content-Type': 'application/json'}
+        self.client.post("/auth/teacher", json=payload, headers=headers)
+
+    @task
+    def get_students(self):
+        self.client.get("/api/get")
+
+    @task
+    def create_student_db(self):
+        payload = {
+            "name": "John Doe",
+            "dept_name": "Computer Science",
+            "total_cred": 120
+        }
+        headers = {'Content-Type': 'application/json'}
+        self.client.post("/api/post", json=payload, headers=headers)
+
+    @task
+    def remove_student(self):
+        student_id = 1  # Replace with an existing student ID
+        self.client.delete(f"/api/remove/{student_id}")
+
+    @task
+    def get_student(self):
+        student_id = 1  # Replace with an existing student ID
+        self.client.get(f"/api/get/{student_id}")
+
+    @task
+    def update_student(self):
+        student_id = 1  # Replace with an existing student ID
+        payload = {
+            "name": "Updated Name",
+            "dept_name": "Updated Department",
+            "total_cred": 150
+        }
+        headers = {'Content-Type': 'application/json'}
+        self.client.put(f"/api/update/{student_id}", json=payload, headers=headers)
